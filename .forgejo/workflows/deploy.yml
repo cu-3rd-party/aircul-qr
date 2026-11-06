@@ -1,0 +1,83 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+# Образ — git.cu3rd.ru/cu3rd/aircul-qr (теги sha-<коммит> и полный коммит, его доставляет deploy);
+# REGISTRY_USER/REGISTRY_TOKEN пушат в реестр. Деплой — доставка в self-service
+# (projects/aircul-qr.yaml): PR с тегом и запечатанными секретами; OIDC подтверждает
+# происхождение, и такой PR сливает автомат. Секрет репозитория: JWT_SECRET (≥ 32 байт).
+jobs:
+  test:
+    name: test
+    runs-on: homelab-docker
+    container:
+      image: ghcr.io/catthehacker/ubuntu:act-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+    env:
+      TEST_DATABASE_URL: postgres://postgres:postgres@postgres:5432/postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - run: cargo clippy --workspace --all-targets --locked
+      - run: cargo test --workspace --locked
+
+  image:
+    name: build & push
+    runs-on: homelab-docker
+    needs: test
+    container:
+      image: ghcr.io/catthehacker/ubuntu:act-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker
+
+      - uses: docker/login-action@v3
+        with:
+          registry: git.cu3rd.ru
+          username: ${{ vars.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          pull: true
+          push: true
+          tags: |
+            git.cu3rd.ru/cu3rd/aircul-qr:sha-${{ github.sha }}
+            git.cu3rd.ru/cu3rd/aircul-qr:${{ github.sha }}
+            git.cu3rd.ru/cu3rd/aircul-qr:master
+
+  deploy:
+    name: deploy (self-service delivery)
+    runs-on: homelab-docker
+    enable-openid-connect: true
+    container:
+      image: ghcr.io/catthehacker/ubuntu:act-24.04
+    needs: image
+    concurrency: self-service-delivery
+    steps:
+      - uses: https://git.cu3rd.ru/cu3rd/self-service/actions/deploy@master
+        with:
+          project: aircul-qr
+          environment: prod
+          app: api
+          tag: ${{ github.sha }}
+          secrets-json: ${{ toJSON(secrets) }}
+          variables-json: ${{ toJSON(vars) }}
+          delivery-token: ${{ secrets.SELF_SERVICE_DELIVERY_TOKEN }}
