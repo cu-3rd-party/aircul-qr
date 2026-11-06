@@ -5,7 +5,7 @@ on:
     branches: [ master ]
   workflow_dispatch:
 
-# Образ — git.cu3rd.ru/cu3rd/aircul-qr (теги sha-<коммит> и полный коммит, его доставляет deploy);
+# Образ (приватный, организация cu3rd-private; REGISTRY_USER состоит в её команде ci) — git.cu3rd.ru/cu3rd-private/aircul-qr (теги sha-<коммит> и полный коммит, его доставляет deploy);
 # REGISTRY_USER/REGISTRY_TOKEN пушат в реестр. Деплой — доставка в self-service
 # (projects/aircul-qr.yaml): PR с тегом и запечатанными секретами; OIDC подтверждает
 # происхождение, и такой PR сливает автомат. Секрет репозитория: JWT_SECRET (≥ 32 байт).
@@ -59,9 +59,9 @@ jobs:
           pull: true
           push: true
           tags: |
-            git.cu3rd.ru/cu3rd/aircul-qr:sha-${{ github.sha }}
-            git.cu3rd.ru/cu3rd/aircul-qr:${{ github.sha }}
-            git.cu3rd.ru/cu3rd/aircul-qr:master
+            git.cu3rd.ru/cu3rd-private/aircul-qr:sha-${{ github.sha }}
+            git.cu3rd.ru/cu3rd-private/aircul-qr:${{ github.sha }}
+            git.cu3rd.ru/cu3rd-private/aircul-qr:master
 
   deploy:
     name: deploy (self-service delivery)

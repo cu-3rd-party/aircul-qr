@@ -112,10 +112,10 @@ cargo run -p template-migration -- down
 ## Деплой
 
 Прод — https://qr.cu3rd.ru (зона grm). Push в `master` → `.forgejo/workflows/deploy.yml`: тесты, образ
-`git.cu3rd.ru/cu3rd/aircul-qr` (теги `sha-<commit>` и полный коммит), затем доставка в self-service
+`git.cu3rd.ru/cu3rd-private/aircul-qr` (теги `sha-<commit>` и полный коммит), затем доставка в self-service
 (`projects/aircul-qr.yaml` в `cu3rd/self-service`): PR с тегом и запечатанным `JWT_SECRET`, который сливает автомат.
 Секреты репозитория: `JWT_SECRET`, `REGISTRY_TOKEN`, `SELF_SERVICE_DELIVERY_TOKEN` (выдаёт платформа);
-переменные `REGISTRY_USER`, `PUBLIC_BASE_URL`. `DATABASE_URL` выдаёт платформа,
+переменные `REGISTRY_USER`, `PUBLIC_BASE_URL`. `DATABASE_URL` выдаёт платформа. Образ приватный: кластер тянет его токеном cu3rd-private-pull (sealedPullSecret в проекте).
 
 ## Docker
 
