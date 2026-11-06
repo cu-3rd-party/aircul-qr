@@ -1,0 +1,28 @@
+[package]
+name = "template-infrastructure"
+description = "Инфраструктура: SeaORM-подключение, persistence-модели, реализации репозиториев и UnitOfWork, рендер QR."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+template-domain.workspace = true
+template-migration.workspace = true
+template-application.workspace = true
+async-trait.workspace = true
+chrono.workspace = true
+image.workspace = true
+qrcode.workspace = true
+sea-orm.workspace = true
+serde_json.workspace = true
+tracing.workspace = true
+uuid.workspace = true
+
+[dev-dependencies]
+template-test-support.workspace = true
+chrono.workspace = true
+tokio.workspace = true
+
+[lints]
+workspace = true

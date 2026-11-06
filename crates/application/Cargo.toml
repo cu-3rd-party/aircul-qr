@@ -1,0 +1,21 @@
+[package]
+name = "template-application"
+description = "Слой приложения: use-case сервисы, DTO, ошибки приложения. Зависит только от домена."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+template-domain.workspace = true
+chrono.workspace = true
+thiserror.workspace = true
+uuid.workspace = true
+
+[dev-dependencies]
+async-trait.workspace = true
+mockall.workspace = true
+tokio.workspace = true
+
+[lints]
+workspace = true

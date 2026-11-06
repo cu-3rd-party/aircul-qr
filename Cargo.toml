@@ -1,0 +1,65 @@
+[workspace]
+resolver = "3"
+members = ["crates/*"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+publish = false
+
+[workspace.dependencies]
+# слои
+template-domain = { path = "crates/domain" }
+template-application = { path = "crates/application" }
+template-infrastructure = { path = "crates/infrastructure" }
+template-migration = { path = "crates/migration" }
+template-test-support = { path = "crates/test-support" }
+
+# web
+axum = { version = "0.8", features = ["macros"] }
+tower = { version = "0.5", features = ["util"] }
+tower-http = { version = "0.7", features = ["cors", "trace"] }
+utoipa = { version = "6", features = ["axum_extras", "chrono", "uuid"] }
+utoipa-axum = "0.3"
+utoipa-scalar = { version = "0.4", features = ["axum"] }
+
+# база данных
+sea-orm = { version = "2", default-features = false, features = ["sqlx-postgres", "runtime-tokio-rustls", "macros", "with-chrono", "with-uuid", "with-json"] }
+sea-orm-migration = { version = "2", default-features = false, features = ["sqlx-postgres", "runtime-tokio-rustls"] }
+
+# общее
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "signal", "net", "io-util"] }
+async-trait = "0.1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+uuid = { version = "1", features = ["v7", "serde"] }
+chrono = { version = "0.4", default-features = false, features = ["clock", "serde"] }
+thiserror = "2"
+anyhow = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+dotenvy = "0.15"
+rand = "0.10"
+
+# QR и JWT
+qrcode = { version = "0.14", default-features = false, features = ["image", "svg"] }
+image = { version = "0.25", default-features = false, features = ["png"] }
+jsonwebtoken = { version = "11", default-features = false, features = ["rust_crypto"] }
+
+# тесты
+mockall = "0.15"
+dtor = "1"
+url = "2"
+testcontainers-modules = { version = "0.15", features = ["postgres"] }
+http-body-util = "0.1"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+
+[profile.release]
+lto = "thin"
+strip = true

@@ -1,0 +1,41 @@
+@host = http://localhost:5213
+# cargo run -p template-web -- issue-token aircul-bot codes:write codes:read codes:read:any
+@token = paste-token-here
+
+GET {{host}}/api/v1/qr-codes
+Authorization: Bearer {{token}}
+
+###
+
+POST {{host}}/api/v1/qr-codes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "targetUrl": "https://t.me/aircul_bot?start=mg_{code}",
+  "title": "Сапёр",
+  "metadata": { "kind": "minigame", "game": "minesweeper" },
+  "expiresAt": "2030-01-01T00:00:00Z"
+}
+
+###
+
+POST {{host}}/api/v1/qr-codes/batch
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "count": 10, "targetUrl": "https://t.me/aircul_bot?start=qr_{code}", "title": "Кампус" }
+
+###
+
+GET {{host}}/api/v1/qr-codes/by-code/REPLACE_CODE
+Authorization: Bearer {{token}}
+
+###
+
+# скан: 302 на targetUrl
+GET {{host}}/s/REPLACE_CODE
+
+###
+
+GET {{host}}/i/REPLACE_CODE.png?size=512
